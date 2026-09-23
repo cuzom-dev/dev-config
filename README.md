@@ -91,6 +91,27 @@ Without npm, install from a tag (never from `main`):
 pnpm add -D "@cuzom/eslint-config@github:cuzom-dev/dev-config#<tag>&path:/eslint"
 ```
 
+## Releasing
+
+Releases are driven by the Conventional Commits that land on `main`; all three packages share one
+version.
+
+1. Merge your work as usual. [release-please](https://github.com/googleapis/release-please) keeps
+   **one release pull request** open and updates it as commits land: it bumps the version in every
+   package and writes `CHANGELOG.md`. Nothing is released while it sits there.
+2. **Merge that pull request when you want to release.** It creates the tag and the GitHub release,
+   and the same workflow run then stages the packages on npm, using trusted publishing over OpenID
+   Connect, so there is no npm token anywhere and the packages get provenance.
+3. **Approve the staged versions**, which is what makes them installable: the **Staged Packages**
+   tab on npmjs.com, or `npm stage approve <stage-id>` after `npm stage list`. Both ask for 2FA. To
+   look first: `npm stage view <stage-id>` or `npm stage download <stage-id>`.
+
+The version comes from the commit types: `fix:` gives a patch, `feat:` a minor, and `!` or a
+`BREAKING CHANGE:` footer a major release.
+
+The **first** publish of a package is manual (`npm publish ./eslint`), because a package's trusted
+publisher is configured in its settings on npmjs.com, which exist only once the package does.
+
 ## Licence
 
 © Cuzom Oy. [Apache-2.0](LICENSE): use and copy these settings freely.

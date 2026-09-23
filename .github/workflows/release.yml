@@ -1,0 +1,49 @@
+# Releases the packages. Two steps, both driven by what is merged into main.
+#
+# 1. release-please reads the Conventional Commits on main and keeps a release pull request open: it bumps the
+#    version in every package, writes CHANGELOG.md and, when that pull request is merged, creates the tag and the
+#    GitHub release.
+# 2. The same run then stages the packages on npm. npm trusts this workflow through OpenID Connect (trusted
+#    publishing), so no npm token exists anywhere and the packages get provenance. Staged versions are not live:
+#    a person approves them with 2FA (`npm stage approve <stage-id>` or the Staged Packages tab), so a mistake or
+#    a compromised workflow cannot release anything on its own.
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write # create the release commit, tag and GitHub release
+  pull-requests: write # keep the release pull request up to date
+  id-token: write # lets npm verify this workflow through OIDC
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      released: ${{ steps.release.outputs.release_created }}
+      tag: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  publish:
+    needs: release-please
+    if: needs.release-please.outputs.released == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.release-please.outputs.tag }}
+      - uses: jdx/mise-action@v4
+      - run: npm install -g npm@^11 # trusted publishing needs npm 11.5.1 or newer
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm format:check
+      - run: pnpm lint
+      - run: npm stage publish ./prettier
+      - run: npm stage publish ./tsconfig
+      - run: npm stage publish ./eslint
