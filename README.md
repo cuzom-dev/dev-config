@@ -91,6 +91,20 @@ Without npm, install from a tag (never from `main`):
 pnpm add -D "@cuzom/eslint-config@github:cuzom-dev/dev-config#<tag>&path:/eslint"
 ```
 
+## Releasing
+
+Every release is one version for all three packages.
+
+1. Bump `version` in `eslint/package.json`, `prettier/package.json`, `tsconfig/package.json` and
+   `package.json`, and commit.
+2. Tag it: `git tag vX.Y.Z && git push --tags`.
+3. The [Release workflow](.github/workflows/release.yml) checks the packages against the tag, runs
+   the checks and publishes to npm. It uses npm's trusted publishing over OpenID Connect, so no npm
+   token exists anywhere, and the packages get provenance attestations.
+
+The **first** publish of a package is manual (`npm publish ./eslint`), because a package's trusted
+publisher is configured in its settings on npmjs.com, which exist only once the package does.
+
 ## Licence
 
 © Cuzom Oy. [Apache-2.0](LICENSE): use and copy these settings freely.

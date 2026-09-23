@@ -1,0 +1,41 @@
+# Publishes the packages to npm when a tag vX.Y.Z is pushed.
+#
+# No npm token: npm trusts this workflow through OpenID Connect (trusted publishing), which each package's
+# settings on npmjs.com name by repository and workflow file. Publishing from a public repository this way also
+# attaches provenance, so anyone can see which commit and workflow built the package.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+  id-token: write # lets npm verify this workflow through OIDC
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v4
+      - run: npm install -g npm@^11 # trusted publishing needs npm 11.5.1 or newer
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm format:check
+      - run: pnpm lint
+
+      - name: Check that the packages carry the tag's version
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          for package in prettier tsconfig eslint; do
+            found=$(node -p "require('./$package/package.json').version")
+            if [ "$found" != "$version" ]; then
+              echo "$package is $found, but the tag says $version" >&2
+              exit 1
+            fi
+          done
+
+      # The engine before the web app, so a dependant never resolves a version that is not there yet.
+      - run: npm publish ./prettier
+      - run: npm publish ./tsconfig
+      - run: npm publish ./eslint
