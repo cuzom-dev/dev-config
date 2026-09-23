@@ -1,6 +1,6 @@
 {
   "name": "@cuzom/tsconfig",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Base tsconfig: strict, modern target, bundler resolution.",
   "license": "Apache-2.0",
   "author": "Cuzom Oy",
