@@ -1,0 +1,33 @@
+{
+  "name": "@cuzom/prettier-config",
+  "version": "1.0.0",
+  "description": "Prettier settings: no semicolons, single quotes, width 100.",
+  "license": "Apache-2.0",
+  "author": "Cuzom Oy",
+  "homepage": "https://github.com/cuzom-dev/dev-config/tree/main/prettier#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cuzom-dev/dev-config.git",
+    "directory": "prettier"
+  },
+  "type": "module",
+  "exports": {
+    ".": "./index.json"
+  },
+  "files": [
+    "README.md",
+    "index.json"
+  ],
+  "peerDependencies": {
+    "prettier": ">=3"
+  },
+  "keywords": [
+    "prettier",
+    "prettier-config",
+    "code-style",
+    "formatting"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

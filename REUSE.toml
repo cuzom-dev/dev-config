@@ -1,0 +1,11 @@
+version = 1
+SPDX-PackageName = "dev-config"
+SPDX-PackageSupplier = "Cuzom Oy"
+SPDX-PackageDownloadLocation = "https://github.com/cuzom-dev/dev-config"
+
+# Copyright and licence for the whole repository (https://reuse.software). These settings are meant
+# to be copied freely, so Apache-2.0.
+[[annotations]]
+path = "**"
+SPDX-FileCopyrightText = "Cuzom Oy"
+SPDX-License-Identifier = "Apache-2.0"

@@ -1,0 +1,42 @@
+{
+  "name": "@cuzom/eslint-config",
+  "version": "1.0.0",
+  "description": "ESLint flat config: recommended JavaScript and TypeScript rules, light typing, formatting left to Prettier.",
+  "license": "Apache-2.0",
+  "author": "Cuzom Oy",
+  "homepage": "https://github.com/cuzom-dev/dev-config/tree/main/eslint#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cuzom-dev/dev-config.git",
+    "directory": "eslint"
+  },
+  "type": "module",
+  "exports": {
+    ".": "./index.js"
+  },
+  "files": [
+    "README.md",
+    "index.js"
+  ],
+  "dependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.12.0",
+    "typescript-eslint": "^8.70.1"
+  },
+  "peerDependencies": {
+    "eslint": ">=10",
+    "typescript": ">=5 <7"
+  },
+  "keywords": [
+    "eslint-config",
+    "eslintconfig",
+    "eslint",
+    "typescript",
+    "flat-config",
+    "prettier"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

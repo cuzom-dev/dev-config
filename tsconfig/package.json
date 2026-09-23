@@ -1,0 +1,28 @@
+{
+  "name": "@cuzom/tsconfig",
+  "version": "1.0.0",
+  "description": "Base tsconfig: strict, modern target, bundler resolution.",
+  "license": "Apache-2.0",
+  "author": "Cuzom Oy",
+  "homepage": "https://github.com/cuzom-dev/dev-config/tree/main/tsconfig#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cuzom-dev/dev-config.git",
+    "directory": "tsconfig"
+  },
+  "exports": {
+    "./base.json": "./base.json"
+  },
+  "files": [
+    "README.md",
+    "base.json"
+  ],
+  "keywords": [
+    "tsconfig",
+    "typescript",
+    "config"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

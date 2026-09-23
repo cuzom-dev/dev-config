@@ -1,0 +1,4 @@
+# Tools for working on this repository.
+[tools]
+node = "24"
+pnpm = "12.4.2"
