@@ -1,6 +1,6 @@
 {
   "name": "@cuzom/eslint-config",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "ESLint flat config: recommended JavaScript and TypeScript rules, light typing, formatting left to Prettier.",
   "license": "Apache-2.0",
   "author": "Cuzom Oy",
