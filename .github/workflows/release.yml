@@ -1,8 +1,11 @@
 # Publishes the packages to npm when a tag vX.Y.Z is pushed.
 #
 # No npm token: npm trusts this workflow through OpenID Connect (trusted publishing), which each package's
-# settings on npmjs.com name by repository and workflow file. Publishing from a public repository this way also
-# attaches provenance, so anyone can see which commit and workflow built the package.
+# settings on npmjs.com name by repository and workflow file. Publishing this way also attaches provenance, so
+# anyone can see which commit and workflow built the package.
+#
+# The versions are staged, not published: a person approves them with 2FA before they go live, so a wrong tag or
+# a compromised workflow cannot release anything on its own.
 name: Release
 
 on:
@@ -35,7 +38,9 @@ jobs:
             fi
           done
 
-      # The engine before the web app, so a dependant never resolves a version that is not there yet.
-      - run: npm publish ./prettier
-      - run: npm publish ./tsconfig
-      - run: npm publish ./eslint
+      # Staged publishing: the versions wait for approval instead of going live. Review them with
+      # `npm stage list` and `npm stage view <id>`, then approve on npmjs.com or with
+      # `npm stage approve <id>` (2FA either way).
+      - run: npm stage publish ./prettier
+      - run: npm stage publish ./tsconfig
+      - run: npm stage publish ./eslint
