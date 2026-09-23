@@ -99,8 +99,11 @@ Every release is one version for all three packages.
    `package.json`, and commit.
 2. Tag it: `git tag vX.Y.Z && git push --tags`.
 3. The [Release workflow](.github/workflows/release.yml) checks the packages against the tag, runs
-   the checks and publishes to npm. It uses npm's trusted publishing over OpenID Connect, so no npm
-   token exists anywhere, and the packages get provenance attestations.
+   the checks and **stages** the versions on npm. It uses npm's trusted publishing over OpenID
+   Connect, so no npm token exists anywhere, and the packages get provenance attestations.
+4. Approve the staged versions, which is what makes them installable: the **Staged Packages** tab on
+   npmjs.com, or `npm stage approve <stage-id>` after `npm stage list`. Both ask for 2FA. To look
+   first: `npm stage view <stage-id>` or `npm stage download <stage-id>`.
 
 The **first** publish of a package is manual (`npm publish ./eslint`), because a package's trusted
 publisher is configured in its settings on npmjs.com, which exist only once the package does.
