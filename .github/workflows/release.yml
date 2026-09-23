@@ -12,6 +12,13 @@ name: Release
 on:
   push:
     branches: [main]
+  # Staging again for a tag that already exists: the release was cut but publishing failed. Without this the
+  # only way forward would be to invent a version number for a release that is already tagged.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to stage on npm, e.g. v1.0.1
+        required: true
 
 permissions:
   contents: write # create the release commit, tag and GitHub release
@@ -20,6 +27,7 @@ permissions:
 
 jobs:
   release-please:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     outputs:
       released: ${{ steps.release.outputs.release_created }}
@@ -33,16 +41,19 @@ jobs:
 
   publish:
     needs: release-please
-    if: needs.release-please.outputs.released == 'true'
+    # A release was just cut, or a person asked for an existing tag. !cancelled() is needed because
+    # release-please is skipped on workflow_dispatch, and a skipped dependency would skip this too.
+    if: ${{ !cancelled() && (inputs.tag || needs.release-please.outputs.released == 'true') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ needs.release-please.outputs.tag }}
+          ref: ${{ inputs.tag || needs.release-please.outputs.tag }}
       - uses: jdx/mise-action@v4
       - run: npm install -g npm@^11 # trusted publishing needs npm 11.5.1 or newer
       - run: pnpm install --frozen-lockfile
-      - run: pnpm format:check
+      # No format check here: this tree is main's, plus a version bump and a generated changelog, and CI already
+      # checked main. Style of generated output must never be what stands between a tag and its packages.
       - run: pnpm lint
       - run: npm stage publish ./prettier
       - run: npm stage publish ./tsconfig
