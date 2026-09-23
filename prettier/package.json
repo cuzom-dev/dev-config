@@ -1,6 +1,6 @@
 {
   "name": "@cuzom/prettier-config",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Prettier settings: no semicolons, single quotes, width 100.",
   "license": "Apache-2.0",
   "author": "Cuzom Oy",
