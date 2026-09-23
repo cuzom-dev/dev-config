@@ -14,6 +14,7 @@
     "./base.json": "./base.json"
   },
   "files": [
+    "LICENSE",
     "README.md",
     "base.json"
   ],
