@@ -93,6 +93,8 @@ Renovate reads it from this repository.
 - GitHub Actions are pinned to commit digests, and Renovate's commit messages follow Conventional
   Commits.
 - Security alerts get a `security` label, and the lockfile is refreshed every Monday.
+- TypeScript 7 waits for typescript-eslint. Its pull request stays open with a note, and turns green
+  once typescript-eslint supports 7; do not close it, or Renovate stops offering TypeScript 7.
 
 Renovate reads the file from the default branch, so a change here reaches every repository on its
 next run, without a release.

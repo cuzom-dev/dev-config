@@ -36,6 +36,16 @@
       "automerge": false,
       "labels": ["major-update"],
       "dependencyDashboardApproval": true
+    },
+    {
+      "description": "TypeScript 7 waits for typescript-eslint, which refuses it (8.70.1 declares typescript <6.1.0). The pull request stays open with a note instead of waiting for approval: its CI fails until typescript-eslint supports 7, then turns green once Renovate rebases it. The rule only matches below 7, so it retires itself.",
+      "matchPackageNames": ["typescript"],
+      "matchCurrentVersion": "<7.0.0",
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": false,
+      "prBodyNotes": [
+        "**Do not merge yet.** TypeScript 7 waits until typescript-eslint supports it: 8.70.1 declares `typescript <6.1.0` and stops with \"typescript-eslint does not support TS 7.0\". In a repository that uses `@cuzom/eslint-config`, it also needs a dev-config release that allows TypeScript 7. Keep this pull request open: closing it tells Renovate to ignore TypeScript 7. Once typescript-eslint supports 7, this pull request is rebased and its CI turns green; tick the rebase box below if it stays red."
+      ]
     }
   ]
 }
