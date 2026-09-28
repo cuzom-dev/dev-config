@@ -1,6 +1,7 @@
 # dev-config
 
-Cuzom Oy's shared ESLint, Prettier and TypeScript settings, published so they can be reused.
+Cuzom Oy's shared ESLint, Prettier, TypeScript and Renovate settings, published so they can be
+reused.
 
 | Package                  | What it is                                                                                          |
 | ------------------------ | --------------------------------------------------------------------------------------------------- |
@@ -73,6 +74,28 @@ pnpm add -D @cuzom/tsconfig
   "include": ["src"]
 }
 ```
+
+## Renovate
+
+[`default.json`](default.json) holds the settings for dependency updates. It is not an npm package:
+Renovate reads it from this repository.
+
+`renovate.json`:
+
+```json
+{ "extends": ["github>cuzom-dev/dev-config"] }
+```
+
+- A new version waits three days, and Node waits seven, so a broken or hijacked release has time to
+  be noticed.
+- Minor and patch updates merge themselves once CI passes; major updates wait for approval on the
+  Dependency Dashboard and a manual merge.
+- GitHub Actions are pinned to commit digests, and Renovate's commit messages follow Conventional
+  Commits.
+- Security alerts get a `security` label, and the lockfile is refreshed every Monday.
+
+Renovate reads the file from the default branch, so a change here reaches every repository on its
+next run, without a release.
 
 ## Versions
 
