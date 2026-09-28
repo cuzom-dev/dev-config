@@ -7,6 +7,9 @@
 #    publishing), so no npm token exists anywhere and the packages get provenance. Staged versions are not live:
 #    a person approves them with 2FA (`npm stage approve <stage-id>` or the Staged Packages tab), so a mistake or
 #    a compromised workflow cannot release anything on its own.
+#
+# Staging runs in the `npm` environment, which only main may use, and npm's trusted publisher accepts this
+# workflow in that environment only: a workflow changed on a branch cannot even stage.
 name: Release
 
 on:
@@ -23,7 +26,6 @@ on:
 permissions:
   contents: write # create the release commit, tag and GitHub release
   pull-requests: write # keep the release pull request up to date
-  id-token: write # lets npm verify this workflow through OIDC
 
 jobs:
   release-please:
@@ -45,6 +47,10 @@ jobs:
     # release-please is skipped on workflow_dispatch, and a skipped dependency would skip this too.
     if: ${{ !cancelled() && (inputs.tag || needs.release-please.outputs.released == 'true') }}
     runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write # lets npm verify this workflow through OIDC
     steps:
       - uses: actions/checkout@v7
         with:
