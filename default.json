@@ -1,0 +1,41 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Cuzom's shared Renovate settings for dependency updates. Use them with: \"extends\": [\"github>cuzom-dev/dev-config\"]",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "platformAutomerge": true,
+  "minimumReleaseAge": "3 days",
+  "internalChecksFilter": "strict",
+  "vulnerabilityAlerts": {
+    "labels": ["security"]
+  },
+  "osvVulnerabilityAlerts": true,
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on monday"]
+  },
+  "packageRules": [
+    {
+      "description": "Node.js waits longer than the 3-day hold so version managers (mise, asdf) have caught up",
+      "matchManagers": ["mise", "asdf", "nvm", "npm", "github-actions"],
+      "matchPackageNames": ["node", "nodejs"],
+      "minimumReleaseAge": "7 days"
+    },
+    {
+      "description": "Auto-merge minor and patch updates once CI passes",
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true
+    },
+    {
+      "description": "Major updates need approval on the Dependency Dashboard and a manual merge",
+      "matchUpdateTypes": ["major"],
+      "automerge": false,
+      "labels": ["major-update"],
+      "dependencyDashboardApproval": true
+    }
+  ]
+}
