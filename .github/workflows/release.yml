@@ -1,50 +1,198 @@
-# Releases the packages. Two steps, both driven by what is merged into main.
+# Releases the packages. Three steps, driven by what is merged into main.
 #
 # 1. release-please reads the Conventional Commits on main and keeps a release pull request open: it bumps the
-#    version in every package, writes CHANGELOG.md and, when that pull request is merged, creates the tag and the
-#    GitHub release.
-# 2. The same run then stages the packages on npm. npm trusts this workflow through OpenID Connect (trusted
+#    version in every package and writes CHANGELOG.md.
+# 2. That pull request is merged by this workflow itself, once it has checked that it changes nothing but
+#    version lines and the changelog. The tag and the GitHub release follow in the same run. A release pull
+#    request that fails the check waits for a person.
+# 3. The same run then stages the packages on npm. npm trusts this workflow through OpenID Connect (trusted
 #    publishing), so no npm token exists anywhere and the packages get provenance. Staged versions are not live:
 #    a person approves them with 2FA (`npm stage approve <stage-id>` or the Staged Packages tab), so a mistake or
 #    a compromised workflow cannot release anything on its own.
 #
+# Who pushed the release branch is not trusted, because anyone who can push a branch can push that one; what
+# it changes is checked, and the commit that was checked is the commit that is merged. The check lives here,
+# where an agent cannot edit it (handbook: ways-of-working.md, agents-and-credentials.md).
+#
+# The release is cut once a night rather than on every push, so one release collects a day of merged pull
+# requests and the changelog reads as a grouped list instead of one entry per release. Every push still keeps
+# the release pull request current, so what is queued is always visible, and "Run workflow" cuts one now.
+#
 # Staging runs in the `npm` environment, which only main may use, and npm's trusted publisher accepts this
 # workflow in that environment only: a workflow changed on a branch cannot even stage.
+#
+# Needs "Allow GitHub Actions to create and approve pull requests" on in the repository's settings.
+# Renovate pins the actions to digests.
 name: Release
 
 on:
+  # Keeps the release pull request current, and creates the tag when a person merged that pull request.
   push:
     branches: [main]
-  # Staging again for a tag that already exists: the release was cut but publishing failed. Without this the
-  # only way forward would be to invent a version number for a release that is already tagged.
+  # Cuts the release. Cron is UTC and does not follow daylight saving: the run moves by an hour twice a year.
+  schedule:
+    - cron: '17 1 * * *'
   workflow_dispatch:
     inputs:
+      # With a tag, only staging runs: the release was cut but publishing failed, and without this the only
+      # way forward would be to invent a version number for a release that is already tagged. Empty cuts a
+      # release from what is on main now, without waiting for the night.
       tag:
-        description: Tag to stage on npm, e.g. v1.0.1
-        required: true
+        description: Tag to stage on npm, e.g. v1.0.1. Empty cuts a release from main.
+        required: false
 
 permissions:
-  contents: write # create the release commit, tag and GitHub release
-  pull-requests: write # keep the release pull request up to date
+  contents: write # the release commit, tag and GitHub release, and merging the release pull request
+  pull-requests: write # keeping the release pull request up to date
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   release-please:
-    if: github.event_name == 'push'
+    # Staging an existing tag needs none of this.
+    if: ${{ !inputs.tag }}
     runs-on: ubuntu-latest
     outputs:
-      released: ${{ steps.release.outputs.release_created }}
-      tag: ${{ steps.release.outputs.tag_name }}
+      # The tag is created by the first step when a person merged the release pull request, and by the last
+      # step when this workflow merged it itself.
+      released: ${{ steps.release.outputs.release_created || steps.tag.outputs.release_created }}
+      tag: ${{ steps.release.outputs.tag_name || steps.tag.outputs.tag_name }}
     steps:
-      - uses: googleapis/release-please-action@v5
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5
         id: release
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
 
+      # The configuration read below is main's, from this checkout, never the release branch's.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - name: Merge the release pull request if it changes only versions and the changelog
+        id: merge
+        # A push only keeps the pull request current; the nightly run and "Run workflow" release.
+        if: github.event_name != 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: python
+        run: |
+          import json, os, re, subprocess, sys
+
+          # release-please adds "--components--<package-name>" when the configuration names the package.
+          BRANCH = "release-please--branches--main"
+          MANIFEST = ".release-please-manifest.json"
+
+
+          def run(*args):
+              return subprocess.run(args, check=True, capture_output=True, text=True).stdout
+
+
+          def wait(reason):
+              print(f"::warning::The release pull request waits for a person: {reason}")
+              sys.exit(0)
+
+
+          def changed_lines(path):
+              """The removed and added lines of each hunk in the diff of one file."""
+              hunks = []
+              for line in run("git", "diff", "-U0", "--no-color", "--no-ext-diff", base, head, "--", path).splitlines():
+                  if line.startswith("@@"):
+                      hunks.append(([], []))
+                  elif hunks and line[:1] in ("-", "+"):
+                      hunks[-1][0 if line[0] == "-" else 1].append(line[1:])
+              return hunks
+
+
+          def version_line(line, path):
+              """(key, version) when the line only states a version, otherwise None."""
+              if path.endswith("version.txt"):
+                  m = re.fullmatch(r"\s*v?(\S+)\s*", line)
+                  return ("", m[1]) if m else None
+              m = re.fullmatch(r'\s*"?([\w./@-]+)"?\s*[:=]\s*"([^"]+)"\s*,?\s*', line)
+              return (m[1], m[2]) if m and m[1] in keys else None
+
+
+          repo = os.environ["GITHUB_REPOSITORY"]
+          prs = [pr for pr in json.loads(run("gh", "pr", "list", "--repo", repo, "--base", "main", "--state", "open",
+                                             "--json", "number,headRefName,headRefOid,isCrossRepository"))
+                 if pr["headRefName"] == BRANCH or pr["headRefName"].startswith(BRANCH + "--components--")]
+          if len(prs) > 1:
+              wait(f"{len(prs)} release pull requests are open")
+          if not prs:
+              print("No release pull request is open.")
+              sys.exit(0)
+          pr = prs[0]
+          if pr["isCrossRepository"]:
+              wait("it comes from a fork")
+          head = pr["headRefOid"]
+          run("git", "fetch", "--no-tags", "origin", head)
+          base = run("git", "merge-base", "HEAD", head).strip()
+
+          config = json.load(open("release-please-config.json"))
+          versions_by_package = json.loads(run("git", "show", f"{head}:{MANIFEST}"))
+          versions = set(versions_by_package.values())
+          if not all(re.fullmatch(r"\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?", v) for v in versions):
+              wait(f"the manifest holds something other than versions: {sorted(versions)}")
+          keys = {"version"} | set(json.load(open(MANIFEST)))
+
+          changelogs, version_files = set(), {MANIFEST}
+          for path, package in config["packages"].items():
+              prefix = "" if path == "." else path.strip("/") + "/"
+              changelogs.add(prefix + package.get("changelog-path", config.get("changelog-path", "CHANGELOG.md")))
+              version_files |= {prefix + name for name in ("version.txt", "package.json", "pyproject.toml")}
+              version_files |= {prefix + (f if isinstance(f, str) else f["path"]) for f in package.get("extra-files", [])}
+
+          # --raw: ":<old mode> <new mode> <old blob> <new blob> <status>\t<path>"
+          entries = run("git", "diff", "--raw", "--no-renames", base, head).splitlines()
+          if not any(entry.endswith("\t" + MANIFEST) for entry in entries):
+              wait(f"it does not raise the version in {MANIFEST}")
+          for entry in entries:
+              meta, path = entry.split("\t", 1)
+              old_mode, new_mode, _, _, status = meta[1:].split()
+              if path in changelogs:
+                  if status not in ("A", "M") or new_mode != "100644" or any(r for r, _ in changed_lines(path)):
+                      wait(f"{path} does not only gain lines")
+              elif path in version_files and status == "M" and old_mode == new_mode:
+                  hunks = changed_lines(path)
+                  # One version line per file, one per package in the manifest: a lock file holds other
+                  # packages' version lines too, and only this repository's own may move.
+                  if sum(len(added) for _, added in hunks) > (len(versions_by_package) if path == MANIFEST else 1):
+                      wait(f"{path} changes more lines than its version")
+                  for removed, added in hunks:
+                      if len(removed) != len(added):
+                          wait(f"{path} changes more than version lines")
+                      for old, new in zip(removed, added):
+                          before, after = version_line(old, path), version_line(new, path)
+                          if not before or not after or before[0] != after[0] or after[1] not in versions:
+                              wait(f"{path} changes a line that is not its version: {new.strip()!r}")
+              else:
+                  wait(f"it changes {path}")
+
+          # --match-head-commit: if anything was pushed after the check, GitHub refuses the merge.
+          run("gh", "pr", "merge", str(pr["number"]), "--repo", repo, "--squash", "--match-head-commit", head)
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              output.write("merged=true\n")
+          print(f"Merged release pull request #{pr['number']} at {head}.")
+
+      # A merge made with this workflow's token starts no new workflow run, so the tag and the GitHub release
+      # are created here. When a person merges the release pull request instead, the first step creates them
+      # in the run that merge starts. The job's `released` and `tag` outputs therefore take whichever of the
+      # two steps created them.
+      - if: steps.merge.outputs.merged == 'true'
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5
+        id: tag
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+          skip-github-pull-request: true
+
   publish:
     needs: release-please
     # A release was just cut, or a person asked for an existing tag. !cancelled() is needed because
-    # release-please is skipped on workflow_dispatch, and a skipped dependency would skip this too.
+    # release-please is skipped when a tag is given, and a skipped dependency would skip this too.
     if: ${{ !cancelled() && (inputs.tag || needs.release-please.outputs.released == 'true') }}
     runs-on: ubuntu-latest
     environment: npm
@@ -52,10 +200,10 @@ jobs:
       contents: read
       id-token: write # lets npm verify this workflow through OIDC
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           ref: ${{ inputs.tag || needs.release-please.outputs.tag }}
-      - uses: jdx/mise-action@v4
+      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
       - run: npm install -g npm@^11 # trusted publishing needs npm 11.5.1 or newer
       - run: pnpm install --frozen-lockfile
       # No format check here: this tree is main's, plus a version bump and a generated changelog, and CI already
