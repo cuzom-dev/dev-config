@@ -3,12 +3,13 @@
 # 1. release-please reads the Conventional Commits on main and keeps a release pull request open: it bumps the
 #    version in every package and writes CHANGELOG.md.
 # 2. That pull request is merged by this workflow itself, once it has checked that it changes nothing but
-#    version lines and the changelog. The tag and the GitHub release follow in the same run. A release pull
-#    request that fails the check waits for a person.
-# 3. The same run then stages the packages on npm. npm trusts this workflow through OpenID Connect (trusted
-#    publishing), so no npm token exists anywhere and the packages get provenance. Staged versions are not live:
-#    a person approves them with 2FA (`npm stage approve <stage-id>` or the Staged Packages tab), so a mistake or
-#    a compromised workflow cannot release anything on its own.
+#    version lines and the changelog. A release pull request that fails the check waits for a person. The
+#    merge is made with the release App's token rather than the workflow's own: a push made with
+#    GITHUB_TOKEN starts no new workflow run, an App's does, so the merge starts a run of this workflow.
+# 3. That run creates the tag and the GitHub release, and then stages the packages on npm. npm trusts this
+#    workflow through OpenID Connect (trusted publishing), so no npm token exists anywhere and the packages get
+#    provenance. Staged versions are not live: a person approves them with 2FA (`npm stage approve <stage-id>`
+#    or the Staged Packages tab), so a mistake or a compromised workflow cannot release anything on its own.
 #
 # Who pushed the release branch is not trusted, because anyone who can push a branch can push that one; what
 # it changes is checked, and the commit that was checked is the commit that is merged. The check lives here,
@@ -19,9 +20,9 @@
 # the release pull request current, so what is queued is always visible, and "Run workflow" cuts one now.
 #
 # Staging runs in the `npm` environment, which only main may use, and npm's trusted publisher accepts this
-# workflow in that environment only: a workflow changed on a branch cannot even stage.
+# workflow in that environment only: a workflow changed on a branch cannot even stage. The App's token is
+# minted in the `release` environment for the same reason.
 #
-# Needs "Allow GitHub Actions to create and approve pull requests" on in the repository's settings.
 # Renovate pins the actions to digests.
 name: Release
 
@@ -42,8 +43,7 @@ on:
         required: false
 
 permissions:
-  contents: write # the release commit, tag and GitHub release, and merging the release pull request
-  pull-requests: write # keeping the release pull request up to date
+  contents: read # only the checkouts below; the release App's token does the writing
 
 concurrency:
   group: release
@@ -54,15 +54,24 @@ jobs:
     # Staging an existing tag needs none of this.
     if: ${{ !inputs.tag }}
     runs-on: ubuntu-latest
+    # Only main may deploy to it, which is what keeps the App's key out of a branch's reach.
+    environment: release
     outputs:
-      # The tag is created by the first step when a person merged the release pull request, and by the last
-      # step when this workflow merged it itself.
-      released: ${{ steps.release.outputs.release_created || steps.tag.outputs.release_created }}
-      tag: ${{ steps.release.outputs.tag_name || steps.tag.outputs.tag_name }}
+      # The tag is created whenever a release commit is on main: after this workflow's own merge, in the run
+      # that merge starts, and after a person's merge, in the run their push starts.
+      released: ${{ steps.release.outputs.release_created }}
+      tag: ${{ steps.release.outputs.tag_name }}
     steps:
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
+        id: app-token
+        with:
+          app-id: ${{ secrets.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+
       - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5
         id: release
         with:
+          token: ${{ steps.app-token.outputs.token }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
 
@@ -76,7 +85,7 @@ jobs:
         # A push only keeps the pull request current; the nightly run and "Run workflow" release.
         if: github.event_name != 'push'
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         shell: python
         run: |
           import json, os, re, subprocess, sys
@@ -176,18 +185,6 @@ jobs:
           with open(os.environ["GITHUB_OUTPUT"], "a") as output:
               output.write("merged=true\n")
           print(f"Merged release pull request #{pr['number']} at {head}.")
-
-      # A merge made with this workflow's token starts no new workflow run, so the tag and the GitHub release
-      # are created here. When a person merges the release pull request instead, the first step creates them
-      # in the run that merge starts. The job's `released` and `tag` outputs therefore take whichever of the
-      # two steps created them.
-      - if: steps.merge.outputs.merged == 'true'
-        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5
-        id: tag
-        with:
-          config-file: release-please-config.json
-          manifest-file: .release-please-manifest.json
-          skip-github-pull-request: true
 
   publish:
     needs: release-please
