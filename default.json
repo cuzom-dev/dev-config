@@ -7,7 +7,7 @@
     ":semanticCommits",
     "helpers:pinGitHubActionDigests"
   ],
-  "platformAutomerge": true,
+  "platformAutomerge": false,
   "minimumReleaseAge": "3 days",
   "internalChecksFilter": "strict",
   "vulnerabilityAlerts": {
