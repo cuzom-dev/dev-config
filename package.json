@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "author": "Cuzom Oy",
   "type": "module",
-  "packageManager": "pnpm@12.6.0",
+  "packageManager": "pnpm@12.7.0",
   "prettier": "./prettier/index.json",
   "scripts": {
     "format": "prettier --write .",
