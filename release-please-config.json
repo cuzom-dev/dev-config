@@ -25,6 +25,7 @@
     }
   },
   "include-component-in-tag": false,
+  "pull-request-footer": "**Merging this yourself is fine, and releases now rather than tonight** — the tag is created by the run your merge starts. It skips one thing: this pull request is otherwise merged by the release workflow, and only after it has checked that nothing changes but version lines and the changelog. That check does not run when a person merges, and anyone with write access can push this branch, so read the diff first.",
   "changelog-sections": [
     {
       "type": "feat",
