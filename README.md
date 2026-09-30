@@ -12,6 +12,12 @@ reused.
 The packages are on npm, and they are plain JSON and JavaScript with no build step, so they can also
 be installed straight from this repository with a tag.
 
+**Python settings are not here.** Ruff has no package to depend on, and its `extend` takes a local
+path with no URL form, so nothing can reach a file in another repository — least of all in CI, where
+only one repository is checked out. The shared `ruff.toml` is therefore a template to copy, in
+`dev-tools`' `templates/`, and `tools` in a repository's `.cuzom-conventions.toml` says which
+version its copy matches.
+
 ## Prettier
 
 ```bash
