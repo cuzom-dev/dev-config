@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0](https://github.com/cuzom-dev/dev-config/compare/v1.0.2...v1.1.0) (2026-09-30)
+
+
+### Features
+
+* one public preset, so a public repository can read it ([#26](https://github.com/cuzom-dev/dev-config/issues/26)) ([b7fecd3](https://github.com/cuzom-dev/dev-config/commit/b7fecd3aba6d9ece785382f75f6758b51dfa6cbe))
+* the release pull request says what merging it yourself does ([#30](https://github.com/cuzom-dev/dev-config/issues/30)) ([fd7d184](https://github.com/cuzom-dev/dev-config/commit/fd7d184855aa6dd21310d6cb67af890beb8cef1b))
+
 ## [1.0.2](https://github.com/cuzom-dev/dev-config/compare/v1.0.1...v1.0.2) (2026-09-23)
 
 
