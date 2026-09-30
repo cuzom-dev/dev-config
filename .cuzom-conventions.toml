@@ -1,0 +1,5 @@
+# The versions of Cuzom's shared conventions this repository was last checked against: the handbook's
+# rules and the templates it was set up from. Renovate opens a pull request when a newer one is released;
+# read the changes it lists, bring the repository in line, and merge. Versions only, never links.
+handbook = "2.3.0"
+tools = "3.4.0"
