@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "description": "Cuzom's shared Renovate settings for dependency updates. Use them with: \"extends\": [\"github>cuzom-dev/dev-config\"]",
+  "description": "Cuzom's shared Renovate settings: dependency updates, and a check against every new handbook and dev-tools version. Use them with: \"extends\": [\"github>cuzom-dev/dev-config\"]. This repository is public on purpose - Renovate gives a public repository a token scoped to that repository alone, so a public repository cannot read a preset that lives in a private one.",
   "extends": [
     "config:recommended",
     ":dependencyDashboard",
@@ -46,6 +46,37 @@
       "prBodyNotes": [
         "**Do not merge yet.** TypeScript 7 waits until typescript-eslint supports it: 8.70.1 declares `typescript <6.1.0` and stops with \"typescript-eslint does not support TS 7.0\". In a repository that uses `@cuzom/eslint-config`, it also needs a dev-config release that allows TypeScript 7. Keep this pull request open: closing it tells Renovate to ignore TypeScript 7. Once typescript-eslint supports 7, this pull request is rebased and its CI turns green; tick the rebase box below if it stays red."
       ]
+    },
+    {
+      "description": "A new handbook or dev-tools version is a check to do, not an update to merge: the pull request lists what changed, a person or an agent brings the repository in line, and a person merges",
+      "matchFileNames": [".cuzom-conventions.toml"],
+      "automerge": false,
+      "dependencyDashboardApproval": false,
+      "minimumReleaseAge": null,
+      "semanticCommitType": "chore",
+      "semanticCommitScope": null,
+      "commitMessageAction": "check against",
+      "commitMessageTopic": "{{depName}}",
+      "commitMessageExtra": "{{newVersion}}",
+      "labels": ["conventions"]
+    },
+    {
+      "description": "A major version of the handbook or dev-tools changed a rule: this repository no longer complies until it is checked and fixed",
+      "matchFileNames": [".cuzom-conventions.toml"],
+      "matchUpdateTypes": ["major"],
+      "addLabels": ["breaking"]
+    }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "The versions of the handbook and of dev-tools a repository was last checked against",
+      "managerFilePatterns": ["/(^|/)\\.cuzom-conventions\\.toml$/"],
+      "matchStrings": ["(?:^|\\n)(?<depName>handbook|tools)\\s*=\\s*\"(?<currentValue>[^\"]+)\""],
+      "packageNameTemplate": "{{#if (equals depName 'handbook')}}cuzom-dev/dev-handbook{{else}}cuzom-dev/dev-tools{{/if}}",
+      "datasourceTemplate": "github-releases",
+      "extractVersionTemplate": "^v(?<version>.+)$",
+      "versioningTemplate": "semver"
     }
   ]
 }

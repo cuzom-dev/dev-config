@@ -1,4 +1,4 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>cuzom-dev/dev-tools"]
+  "extends": ["github>cuzom-dev/dev-config"]
 }
