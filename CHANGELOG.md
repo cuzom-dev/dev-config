@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/cuzom-dev/dev-config/compare/v1.1.0...v1.1.1) (2026-10-01)
+
+
+### Documentation
+
+* say where the shared Python settings live ([#32](https://github.com/cuzom-dev/dev-config/issues/32)) ([6674e57](https://github.com/cuzom-dev/dev-config/commit/6674e57724e9d91c0ed4ea8100e69e77675637b0))
+
 ## [1.1.0](https://github.com/cuzom-dev/dev-config/compare/v1.0.2...v1.1.0) (2026-09-30)
 
 
