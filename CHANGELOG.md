@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.2](https://github.com/cuzom-dev/dev-config/compare/v1.1.1...v1.1.2) (2026-10-02)
+
+
+### Fixes
+
+* Renovate no longer opens a pull request about a new handbook or dev-tools version ([#38](https://github.com/cuzom-dev/dev-config/issues/38)) ([783ea96](https://github.com/cuzom-dev/dev-config/commit/783ea96c771c8bcd07084c0c667f355cd7e64dcd))
+
+
+### Documentation
+
+* the Nuxt ESLint recipe needs files, and a postinstall ([#34](https://github.com/cuzom-dev/dev-config/issues/34)) ([647eee3](https://github.com/cuzom-dev/dev-config/commit/647eee35cdb70d1c2a824f17096940f8b845bcdd))
+
 ## [1.1.1](https://github.com/cuzom-dev/dev-config/compare/v1.1.0...v1.1.1) (2026-10-01)
 
 
