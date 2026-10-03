@@ -20,14 +20,18 @@ async function warnings(code) {
   return results.flatMap((result) => result.warnings.map((w) => w.rule))
 }
 
-async function warningsOfVue(style) {
+async function warningsOfVue(style, { alone = false } = {}) {
   const dir = await mkdtemp(join(tmpdir(), 'cuzom-stylelint-'))
   const file = join(dir, 'A.vue')
   await writeFile(
     file,
     `<template>\n  <p class="a">x</p>\n</template>\n\n<style scoped>\n${style}\n</style>\n`
   )
-  const { results } = await stylelint.lint({ files: file, config })
+  const { results } = await stylelint.lint({
+    files: file,
+    config,
+    ...(alone ? { configBasedir: dir } : {}),
+  })
   await rm(dir, { recursive: true })
   return results.flatMap((result) => result.warnings.map((w) => w.rule))
 }
@@ -91,6 +95,19 @@ test('finds its own dependencies from a project that has none of them', async ()
   })
   await rm(dir, { recursive: true })
   assert.ok(results[0].warnings.length > 0)
+})
+
+test('reads Vue style blocks from a project that has none of the dependencies', async () => {
+  assert.ok(
+    (
+      await warningsOfVue(
+        `.a {
+  font-size: 13px;
+}`,
+        { alone: true }
+      )
+    ).length > 0
+  )
 })
 
 test('reads the style block of a Vue component', async () => {

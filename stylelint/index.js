@@ -1,5 +1,6 @@
 // @ts-check
 import { fileURLToPath } from 'node:url'
+import vue from 'stylelint-config-recommended-vue'
 
 // Stylelint resolves `extends` and `plugins` names from the project that uses this config, and under pnpm a
 // project does not see its dependencies' dependencies. So they are resolved here, from this package, and
@@ -21,7 +22,12 @@ const KEYWORDS = [
 
 /** @type {import('stylelint').Config} */
 export default {
-  extends: [here('stylelint-config-standard'), here('stylelint-config-recommended-vue')],
+  extends: [here('stylelint-config-standard')],
+  // The Vue config's own overrides (style blocks of .vue files), with what they extend resolved here too.
+  overrides: vue.overrides.map((override) => ({
+    ...override,
+    extends: override.extends.map(here),
+  })),
   plugins: [here('stylelint-declaration-strict-value')],
   rules: {
     // Colours, sizes, spacing, radii, shadows and layers come from design tokens (custom properties), never
