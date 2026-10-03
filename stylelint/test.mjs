@@ -45,7 +45,8 @@ const refused = [
   ['a padding literal in a shorthand', '.a { padding: 0 1.5rem; }'],
   ['a gap literal', '.a { gap: 12px; }'],
   ['a radius literal', '.a { border-radius: 8px; }'],
-  ['a shadow literal', '.a { box-shadow: 0 1px 2px rgb(0 0 0 / 0.1); }'],
+  ['a shadow colour that is a function', '.a { box-shadow: 0 1px 2px rgb(0 0 0 / 0.1); }'],
+  ['a shadow colour that is a hex', '.a { box-shadow: 0 1px 2px #000; }'],
   ['a z-index literal', '.a { z-index: 40; }'],
   ['!important', '.a { color: var(--c) !important; }'],
   ['an id selector', '#a { color: var(--c); }'],
@@ -67,6 +68,12 @@ const accepted = [
   ['an em that follows the text', '.a { font-size: 0.85em; padding: 0.15em 0.35em; }'],
   ['an optical nudge under 4px', '.a { margin-top: 2px; border-radius: 2px; }'],
   ['a function over tokens', '.a { padding: clamp(var(--space-3), 6vw, var(--space-7)); }'],
+  [
+    'the geometry of a shadow over a token colour',
+    '.a { box-shadow: 0 4px 12px var(--black-a2); }',
+  ],
+  ['a layer behind its parent', '.a { z-index: -1; }'],
+  ['a hairline gap in rem', '.a { gap: 0.2rem; }'],
   ['range media notation', '@media (width <= 640px) { .a { color: var(--c); } }'],
 ]
 

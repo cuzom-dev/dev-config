@@ -23,10 +23,11 @@ Run it on CSS and Vue files: `stylelint "**/*.{css,vue}"`.
 ## What it adds to `stylelint-config-standard` and `stylelint-config-recommended-vue`
 
 - **Tokens, not literals.** `color`, `background-color`, `border-color`, `font-size`,
-  `border-radius`, `box-shadow`, `z-index`, `gap`, `margin*` and `padding*` take `var(--…)` (or a
-  function such as `calc()` or `clamp()`), not `13px` or `#cc0000`. Allowed as they are: `0`,
-  `auto`, `inherit`, `currentColor`, `transparent`, percentages, an `em` that follows the text
-  around it, and a nudge under 4px.
+  `border-radius`, `z-index`, `gap`, `margin*` and `padding*` take `var(--…)` (or a function such as
+  `calc()` or `clamp()`), not `13px` or `#cc0000`. Allowed as they are: `0`, `auto`, `inherit`,
+  `currentColor`, `transparent`, percentages, an `em` that follows the text around it, and a nudge
+  under 4px (and a hairline under 0.25rem). A shadow's offsets and blur are geometry and stay
+  literal; its colour is a token, because hex and `rgb()` are refused.
 - **No hex colours and no `rgb()`, `hsl()` or similar** in a component. `color-mix()` is fine. A
   token file (`tokens.css`) defines the colours; turn the rule off for it:
 

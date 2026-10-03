@@ -10,6 +10,7 @@ const here = (name) => fileURLToPath(import.meta.resolve(name))
 // Values that are fine as they are: nothing to tokenise.
 const KEYWORDS = [
   '0',
+  '-1',
   'auto',
   'inherit',
   'initial',
@@ -31,7 +32,7 @@ export default {
   })),
   plugins: [here('stylelint-declaration-strict-value')],
   rules: {
-    // Colours, sizes, spacing, radii, shadows and layers come from design tokens (custom properties), never
+    // Colours, sizes, spacing, radii and layers come from design tokens (custom properties), never
     // as a literal in a component. A value that is not a token is a value nobody named.
     'scale-unlimited/declaration-strict-value': [
       [
@@ -40,7 +41,6 @@ export default {
         'border-color',
         'font-size',
         'border-radius',
-        'box-shadow',
         'z-index',
         'gap',
         'row-gap',
@@ -57,7 +57,7 @@ export default {
           // One or two pixels of optical nudge: under 4px.
           String.raw`/^-?[0-3](\.\d+)?px$/`,
           // A hairline radius or offset in rem, below 0.25rem.
-          String.raw`/^-?0?\.(0\d*|1\d*|2[0-4]\d*)rem$/`,
+          String.raw`/^-?0?\.(?:[01]\d*|2(?:[0-4]\d*)?)rem$/`,
         ],
         // A value that is a function (var(), calc(), clamp(), color-mix()) is built from tokens or from the
         // situation, so it is not a literal; the plugin lets functions through. Colour functions are the
