@@ -30,7 +30,7 @@ async function warningsOfVue(style, { alone = false } = {}) {
   const { results } = await stylelint.lint({
     files: file,
     config,
-    ...(alone ? { configBasedir: dir } : {}),
+    ...(alone ? { cwd: dir } : {}),
   })
   await rm(dir, { recursive: true })
   return results.flatMap((result) => result.warnings.map((w) => w.rule))
@@ -91,7 +91,7 @@ test('finds its own dependencies from a project that has none of them', async ()
 `,
     codeFilename: join(dir, 'a.css'),
     config,
-    configBasedir: dir,
+    cwd: dir,
   })
   await rm(dir, { recursive: true })
   assert.ok(results[0].warnings.length > 0)

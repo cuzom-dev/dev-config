@@ -27,6 +27,7 @@ export default {
   overrides: vue.overrides.map((override) => ({
     ...override,
     extends: override.extends.map(here),
+    customSyntax: here('postcss-html'),
   })),
   plugins: [here('stylelint-declaration-strict-value')],
   rules: {
