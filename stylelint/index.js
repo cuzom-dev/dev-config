@@ -1,4 +1,10 @@
 // @ts-check
+import { fileURLToPath } from 'node:url'
+
+// Stylelint resolves `extends` and `plugins` names from the project that uses this config, and under pnpm a
+// project does not see its dependencies' dependencies. So they are resolved here, from this package, and
+// handed over as paths.
+const here = (name) => fileURLToPath(import.meta.resolve(name))
 
 // Values that are fine as they are: nothing to tokenise.
 const KEYWORDS = [
@@ -15,8 +21,8 @@ const KEYWORDS = [
 
 /** @type {import('stylelint').Config} */
 export default {
-  extends: ['stylelint-config-standard', 'stylelint-config-recommended-vue'],
-  plugins: ['stylelint-declaration-strict-value'],
+  extends: [here('stylelint-config-standard'), here('stylelint-config-recommended-vue')],
+  plugins: [here('stylelint-declaration-strict-value')],
   rules: {
     // Colours, sizes, spacing, radii, shadows and layers come from design tokens (custom properties), never
     // as a literal in a component. A value that is not a token is a value nobody named.

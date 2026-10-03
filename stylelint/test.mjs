@@ -78,6 +78,21 @@ for (const [name, code] of accepted) {
   })
 }
 
+test('finds its own dependencies from a project that has none of them', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'cuzom-stylelint-project-'))
+  const { results } = await stylelint.lint({
+    code: `.a {
+  font-size: 13px;
+}
+`,
+    codeFilename: join(dir, 'a.css'),
+    config,
+    configBasedir: dir,
+  })
+  await rm(dir, { recursive: true })
+  assert.ok(results[0].warnings.length > 0)
+})
+
 test('reads the style block of a Vue component', async () => {
   assert.ok((await warningsOfVue('.a {\n  font-size: 13px;\n}')).length > 0)
   assert.deepEqual(await warningsOfVue('.a {\n  font-size: var(--font-size-2);\n}'), [])
