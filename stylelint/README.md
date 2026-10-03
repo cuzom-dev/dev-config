@@ -45,9 +45,10 @@ Run it on CSS and Vue files: `stylelint "**/*.{css,vue}"`.
   ```
 
 - **No `!important`, no id selectors**, and media queries in range syntax (`width <= 640px`).
-- **BEM class names** (`block__element--modifier`), because the standard kebab-case-only pattern
-  rejects nearly every class in component CSS, and `no-descending-specificity` is off for scoped
-  component styles.
+- **Kebab-case class names**, the standard rule unchanged (Radix Themes and aura-aq-sim name theirs
+  that way). A repository that already has BEM names (`block__element--modifier`) can allow them
+  with its own `selector-class-pattern`. `no-descending-specificity` is off, because it fights with
+  scoped component styles.
 
 Formatting is left to Prettier. `pnpm test` in this repository checks what the config accepts and
 refuses.

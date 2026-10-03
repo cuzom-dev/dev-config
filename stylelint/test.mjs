@@ -51,7 +51,7 @@ const refused = [
   ['!important', '.a { color: var(--c) !important; }'],
   ['an id selector', '#a { color: var(--c); }'],
   ['max-width media notation', '@media (max-width: 640px) { .a { color: var(--c); } }'],
-  ['a class name that is not BEM', '.someClass { color: var(--c); }'],
+  ['a class name that is not kebab-case', '.someClass { color: var(--c); }'],
 ]
 
 const accepted = [
@@ -59,7 +59,7 @@ const accepted = [
     'tokens',
     '.a { font-size: var(--font-size-2); margin: 0 var(--space-4); z-index: var(--z-nav); }',
   ],
-  ['BEM names', '.product__title--big { color: var(--color-text); }'],
+  ['kebab-case names', '.product-title-big { color: var(--color-text); }'],
   [
     'keywords and zero',
     '.a { margin: 0 auto; padding: 0; color: currentcolor; background-color: transparent; }',

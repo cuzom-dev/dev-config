@@ -80,12 +80,6 @@ export default {
     'declaration-no-important': true,
     'selector-max-id': 0,
     'media-feature-range-notation': 'context',
-    // BEM names (`block__element--modifier`) are the naming of the component CSS, so the standard
-    // kebab-case-only pattern would reject nearly every class.
-    'selector-class-pattern': [
-      '^[a-z][a-z0-9]*(-[a-z0-9]+)*(__[a-z0-9]+(-[a-z0-9]+)*)?(--[a-z0-9]+(-[a-z0-9]+)*)?$',
-      { message: 'Class names are kebab-case BEM: block__element--modifier.' },
-    ],
     // Scoped component styles are written where they are used; the order is not a specificity argument.
     'no-descending-specificity': null,
   },
