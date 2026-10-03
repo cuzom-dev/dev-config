@@ -1,13 +1,14 @@
 # dev-config
 
-Cuzom Oy's shared ESLint, Prettier, TypeScript and Renovate settings, published so they can be
-reused.
+Cuzom Oy's shared ESLint, Prettier, Stylelint, TypeScript and Renovate settings, published so they
+can be reused.
 
-| Package                  | What it is                                                                                          |
-| ------------------------ | --------------------------------------------------------------------------------------------------- |
-| `@cuzom/eslint-config`   | flat config: recommended JavaScript and TypeScript rules, light typing, formatting left to Prettier |
-| `@cuzom/prettier-config` | no semicolons, single quotes, width 100, Markdown wrapped at 100                                    |
-| `@cuzom/tsconfig`        | strict, modern target, bundler resolution                                                           |
+| Package                   | What it is                                                                                          |
+| ------------------------- | --------------------------------------------------------------------------------------------------- |
+| `@cuzom/eslint-config`    | flat config: recommended JavaScript and TypeScript rules, light typing, formatting left to Prettier |
+| `@cuzom/prettier-config`  | no semicolons, single quotes, width 100, Markdown wrapped at 100                                    |
+| `@cuzom/stylelint-config` | the standard rules, Vue components, and values from design tokens, not literals                     |
+| `@cuzom/tsconfig`         | strict, modern target, bundler resolution                                                           |
 
 The packages are on npm, and they are plain JSON and JavaScript with no build step, so they can also
 be installed straight from this repository with a tag.
@@ -29,6 +30,16 @@ pnpm add -D prettier @cuzom/prettier-config
 ```json
 "prettier": "@cuzom/prettier-config"
 ```
+
+## Stylelint
+
+```bash
+pnpm add -D stylelint @cuzom/stylelint-config
+```
+
+`stylelint.config.js`: `export { default } from '@cuzom/stylelint-config'`. Values come from design
+tokens, not literals; the [package README](stylelint/README.md) has the rules and the one override a
+`tokens.css` needs.
 
 ## ESLint
 

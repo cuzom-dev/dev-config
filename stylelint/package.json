@@ -1,0 +1,40 @@
+{
+  "name": "@cuzom/stylelint-config",
+  "version": "1.1.2",
+  "description": "Stylelint settings: the standard rules, Vue single-file components, and values that come from design tokens.",
+  "license": "Apache-2.0",
+  "author": "Cuzom Oy",
+  "homepage": "https://github.com/cuzom-dev/dev-config/tree/main/stylelint#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cuzom-dev/dev-config.git",
+    "directory": "stylelint"
+  },
+  "type": "module",
+  "exports": {
+    ".": "./index.js"
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "index.js"
+  ],
+  "dependencies": {
+    "stylelint-config-recommended-vue": "^2.0.0",
+    "stylelint-config-standard": "^40.0.0",
+    "stylelint-declaration-strict-value": "^1.12.1"
+  },
+  "peerDependencies": {
+    "stylelint": ">=17"
+  },
+  "keywords": [
+    "stylelint-config",
+    "stylelint",
+    "css",
+    "design-tokens",
+    "vue"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}
