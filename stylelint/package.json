@@ -1,6 +1,6 @@
 {
   "name": "@cuzom/stylelint-config",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "Stylelint settings: the standard rules, Vue single-file components, and values that come from design tokens.",
   "license": "Apache-2.0",
   "author": "Cuzom Oy",

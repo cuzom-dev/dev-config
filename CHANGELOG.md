@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/cuzom-dev/dev-config/compare/v1.1.2...v1.2.0) (2026-10-04)
+
+
+### Features
+
+* @cuzom/stylelint-config ([#39](https://github.com/cuzom-dev/dev-config/issues/39)) ([3b810f7](https://github.com/cuzom-dev/dev-config/commit/3b810f78e935d77b85597ae8d7d094e1d37c53cb))
+
 ## [1.1.2](https://github.com/cuzom-dev/dev-config/compare/v1.1.1...v1.1.2) (2026-10-02)
 
 
