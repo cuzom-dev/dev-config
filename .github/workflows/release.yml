@@ -209,3 +209,4 @@ jobs:
       - run: npm stage publish ./prettier
       - run: npm stage publish ./tsconfig
       - run: npm stage publish ./eslint
+      - run: npm stage publish ./stylelint
