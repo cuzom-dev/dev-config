@@ -201,7 +201,7 @@ importers:
         version: 40.0.0(stylelint@17.16.0(supports-color@10.2.2)(typescript@6.0.3))
       stylelint-declaration-strict-value:
         specifier: ^1.12.1
-        version: 1.12.1(stylelint@17.16.0(supports-color@10.2.2)(typescript@6.0.3))
+        version: 1.13.0(stylelint@17.16.0(supports-color@10.2.2)(typescript@6.0.3))
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -1333,11 +1333,11 @@ packages:
     peerDependencies:
       stylelint: ^17.0.0
 
-  stylelint-declaration-strict-value@1.12.1:
-    resolution: {integrity: sha512-KSQTXfWboeebH0tw3bZq5ZPLnkUBHvz9PtzAmIaqU7egLvjN7wU/F0tukFBVyGDKQEfDlLNGDNvhI/O1+6KipQ==}
+  stylelint-declaration-strict-value@1.13.0:
+    resolution: {integrity: sha512-d6Wv4qA1j+IcubFy1BjktfOwfXWK4HphJNTnvqKoqD25OqDRpiU/jSAcdZD2tXKg5WBfbH5qq1+bbg4iFzfKow==}
     engines: {node: '>=20.19.0'}
     peerDependencies:
-      stylelint: '>=16 <=17'
+      stylelint: '>=16 <=18'
 
   stylelint@17.16.0:
     resolution: {integrity: sha512-ejlWnbJ13x1GU32+zZXa6sYQJsKKkwSdv2B4rAdO3OWdEmvhSJKcXi5pOphQYSzyaj1kXpuGJr7pcMBNfDIuPw==}
@@ -2695,7 +2695,7 @@ snapshots:
       stylelint: 17.16.0(supports-color@10.2.2)(typescript@6.0.3)
       stylelint-config-recommended: 18.0.0(stylelint@17.16.0(supports-color@10.2.2)(typescript@6.0.3))
 
-  stylelint-declaration-strict-value@1.12.1(stylelint@17.16.0(supports-color@10.2.2)(typescript@6.0.3)):
+  stylelint-declaration-strict-value@1.13.0(stylelint@17.16.0(supports-color@10.2.2)(typescript@6.0.3)):
     dependencies:
       regexp.escape: 2.0.1
       stylelint: 17.16.0(supports-color@10.2.2)(typescript@6.0.3)
