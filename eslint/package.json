@@ -27,7 +27,7 @@
   },
   "peerDependencies": {
     "eslint": ">=10",
-    "typescript": ">=5 <7"
+    "typescript": ">=5 <8"
   },
   "keywords": [
     "eslint-config",
