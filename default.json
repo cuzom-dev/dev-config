@@ -49,13 +49,14 @@
       "dependencyDashboardApproval": true
     },
     {
-      "description": "TypeScript 7 waits for typescript-eslint, which refuses it (8.70.1 declares typescript <6.1.0). The pull request stays open with a note instead of waiting for approval: its CI fails until typescript-eslint supports 7, and Renovate does not rebase it on its own (rebaseWhen is conflicted), so tick its rebase box once typescript-eslint supports 7. The rule only matches below 7, so it retires itself.",
+      "description": "A plain typescript dependency waits for typescript-eslint before going to 7 (8.74 still declares typescript <6.1.0). A repository whose type checking runs tsc takes TypeScript 7 now through an alias instead: \"typescript\": \"npm:@typescript/typescript6@^6.0.2\" for the tools and \"@typescript/native\": \"npm:typescript@^7.0.2\" for tsc. matchPackageNames matches the package looked up on the registry and matchDepNames the name in package.json, so this rule needs both to be typescript and never matches the alias: the aliased typescript follows @typescript/typescript6, which has no 7, and @typescript/native is already on 7, so its minor and patch updates merge like any other. Without the alias (vue-tsc and nuxi typecheck need TypeScript's JS API, which 7 lacks), the TypeScript 7 pull request stays open with a note instead of waiting for approval, and Renovate does not rebase it on its own (rebaseWhen is conflicted). Once typescript-eslint supports 7, the alias goes: typescript becomes ^7 and @typescript/native is removed. The rule only matches below 7, so it retires itself.",
+      "matchDepNames": ["typescript"],
       "matchPackageNames": ["typescript"],
       "matchCurrentVersion": "<7.0.0",
       "matchUpdateTypes": ["major"],
       "dependencyDashboardApproval": false,
       "prBodyNotes": [
-        "**Do not merge yet.** TypeScript 7 waits until typescript-eslint supports it: 8.70.1 declares `typescript <6.1.0` and stops with \"typescript-eslint does not support TS 7.0\". In a repository that uses `@cuzom/eslint-config`, it also needs a dev-config release that allows TypeScript 7. Keep this pull request open: closing it tells Renovate to ignore TypeScript 7. Once typescript-eslint supports 7, tick the rebase box below: Renovate rebases a pull request only when it conflicts, so CI does not run again on its own."
+        "**Do not merge yet.** TypeScript 7 waits until typescript-eslint supports it: 8.74 still declares `typescript <6.1.0` and stops with \"typescript-eslint does not support TS 7.0\". In a repository that uses `@cuzom/eslint-config`, it also needs a dev-config release that allows TypeScript 7. If this repository's type checking runs `tsc`, take TypeScript 7 now through the alias instead, `\"typescript\": \"npm:@typescript/typescript6@^6.0.2\"` beside `\"@typescript/native\": \"npm:typescript@^7.0.2\"` (the handbook's `tech-stack.md`), and close this pull request. If it runs `vue-tsc` or `nuxi typecheck`, keep this pull request open: closing it tells Renovate to ignore TypeScript 7. Once typescript-eslint supports 7, tick the rebase box below: Renovate rebases a pull request only when it conflicts, so CI does not run again on its own."
       ]
     }
   ]
