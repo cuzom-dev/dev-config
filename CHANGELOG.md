@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/cuzom-dev/dev-config/compare/v1.2.0...v1.3.0) (2026-11-27)
+
+
+### Features
+
+* **renovate:** rebase only on conflict, update weekly, group actions ([#79](https://github.com/cuzom-dev/dev-config/issues/79)) ([3dad607](https://github.com/cuzom-dev/dev-config/commit/3dad607aa2231c3ee8688437d2bd92300828b37c))
+
 ## [1.2.0](https://github.com/cuzom-dev/dev-config/compare/v1.1.2...v1.2.0) (2026-10-04)
 
 
