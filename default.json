@@ -10,13 +10,17 @@
   "platformAutomerge": false,
   "minimumReleaseAge": "3 days",
   "internalChecksFilter": "strict",
+  "schedule": ["on monday"],
+  "rebaseWhen": "conflicted",
   "vulnerabilityAlerts": {
-    "labels": ["security"]
+    "labels": ["security"],
+    "schedule": ["at any time"]
   },
   "osvVulnerabilityAlerts": true,
   "lockFileMaintenance": {
     "enabled": true,
-    "schedule": ["before 6am on monday"]
+    "schedule": ["before 6am on monday"],
+    "automerge": true
   },
   "packageRules": [
     {
@@ -31,6 +35,13 @@
       "automerge": true
     },
     {
+      "description": "Every action update except a major one comes as one pull request, so the workflows' digests cost one CI run a week instead of one per action. Container images in a workflow are not actions, so a repository can keep grouping its Playwright image with @playwright/test.",
+      "matchManagers": ["github-actions"],
+      "matchDepTypes": ["action"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "groupName": "github-actions"
+    },
+    {
       "description": "Major updates need approval on the Dependency Dashboard and a manual merge",
       "matchUpdateTypes": ["major"],
       "automerge": false,
@@ -38,13 +49,13 @@
       "dependencyDashboardApproval": true
     },
     {
-      "description": "TypeScript 7 waits for typescript-eslint, which refuses it (8.70.1 declares typescript <6.1.0). The pull request stays open with a note instead of waiting for approval: its CI fails until typescript-eslint supports 7, then turns green once Renovate rebases it. The rule only matches below 7, so it retires itself.",
+      "description": "TypeScript 7 waits for typescript-eslint, which refuses it (8.70.1 declares typescript <6.1.0). The pull request stays open with a note instead of waiting for approval: its CI fails until typescript-eslint supports 7, and Renovate does not rebase it on its own (rebaseWhen is conflicted), so tick its rebase box once typescript-eslint supports 7. The rule only matches below 7, so it retires itself.",
       "matchPackageNames": ["typescript"],
       "matchCurrentVersion": "<7.0.0",
       "matchUpdateTypes": ["major"],
       "dependencyDashboardApproval": false,
       "prBodyNotes": [
-        "**Do not merge yet.** TypeScript 7 waits until typescript-eslint supports it: 8.70.1 declares `typescript <6.1.0` and stops with \"typescript-eslint does not support TS 7.0\". In a repository that uses `@cuzom/eslint-config`, it also needs a dev-config release that allows TypeScript 7. Keep this pull request open: closing it tells Renovate to ignore TypeScript 7. Once typescript-eslint supports 7, this pull request is rebased and its CI turns green; tick the rebase box below if it stays red."
+        "**Do not merge yet.** TypeScript 7 waits until typescript-eslint supports it: 8.70.1 declares `typescript <6.1.0` and stops with \"typescript-eslint does not support TS 7.0\". In a repository that uses `@cuzom/eslint-config`, it also needs a dev-config release that allows TypeScript 7. Keep this pull request open: closing it tells Renovate to ignore TypeScript 7. Once typescript-eslint supports 7, tick the rebase box below: Renovate rebases a pull request only when it conflicts, so CI does not run again on its own."
       ]
     }
   ]

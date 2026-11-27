@@ -116,9 +116,16 @@ Renovate reads it from this repository.
   Dependency Dashboard and a manual merge.
 - GitHub Actions are pinned to commit digests, and Renovate's commit messages follow Conventional
   Commits.
-- Security alerts get a `security` label, and the lockfile is refreshed every Monday.
-- TypeScript 7 waits for typescript-eslint. Its pull request stays open with a note, and turns green
-  once typescript-eslint supports 7; do not close it, or Renovate stops offering TypeScript 7.
+- Updates come on Mondays, and action updates that are not major arrive as one pull request. A
+  security fix comes at once, whatever the day.
+- A pull request is rebased only when it conflicts with `main`, not every time `main` moves: each
+  rebase runs CI again, and one pull request that could not merge used to cost dozens of runs a
+  month. Tick its rebase box to run it against the latest `main`.
+- Security alerts get a `security` label, and the lockfile is refreshed every Monday and merges
+  itself like a minor update.
+- TypeScript 7 waits for typescript-eslint. Its pull request stays open with a note; do not close
+  it, or Renovate stops offering TypeScript 7. Once typescript-eslint supports 7, tick its rebase
+  box so CI runs again.
 
 Renovate reads the file from the default branch, so a change here reaches every repository on its
 next run, without a release.
