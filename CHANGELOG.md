@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/cuzom-dev/dev-config/compare/v1.3.0...v1.4.0) (2026-11-28)
+
+
+### Features
+
+* **renovate:** understand the TypeScript 7 alias, and adopt it here ([#82](https://github.com/cuzom-dev/dev-config/issues/82)) ([dfafa43](https://github.com/cuzom-dev/dev-config/commit/dfafa43647b3b7fc55a1cbfc67845ec1d2524f21))
+
 ## [1.3.0](https://github.com/cuzom-dev/dev-config/compare/v1.2.0...v1.3.0) (2026-11-27)
 
 
